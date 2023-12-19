@@ -1,31 +1,27 @@
 package com.hsuqi.homeschoolinguqiv2;
 
-import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.KeyEvent;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements AdvancedWebView.Listener{
 
-    private WebView webView;
+    private AdvancedWebView webView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        CustomWebViewClient client = new CustomWebViewClient(this);
-
         webView = findViewById(R.id.webView);
-        webView.setWebViewClient(client);
-        webView.getSettings().setJavaScriptEnabled(true);
-
+        webView.setListener(this,this);
+        webView.setMixedContentAllowed(false);
         webView.loadUrl("https://app.hsuqi.com");
     }
 
@@ -37,21 +33,59 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onKeyDown(keyCode, event);
     }
-}
 
-class CustomWebViewClient extends WebViewClient{
-    private Activity activity;
-    public CustomWebViewClient(Activity activity){
-        this.activity = activity;
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        webView.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
-    public boolean shouldOverrideUrlLoading(WebView webView, String url){
-        return false;
+    public void onBackPressed() {
+        if (!webView.onBackPressed()) { return; }
+        super.onBackPressed();
     }
 
     @Override
-    public boolean shouldOverrideUrlLoading(WebView webView, WebResourceRequest request){
-        return false;
+    protected void onDestroy() {
+        webView.onDestroy();
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        webView.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        webView.onPause();
+        super.onPause();
+    }
+
+    @Override
+    public void onPageStarted(String url, Bitmap favicon) {
+
+    }
+
+    @Override
+    public void onPageFinished(String url) {
+
+    }
+
+    @Override
+    public void onPageError(int errorCode, String description, String failingUrl) {
+
+    }
+
+    @Override
+    public void onDownloadRequested(String url, String suggestedFilename, String mimeType, long contentLength, String contentDisposition, String userAgent) {
+
+    }
+
+    @Override
+    public void onExternalPageRequest(String url) {
+
     }
 }
