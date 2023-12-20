@@ -2,8 +2,12 @@ package com.hsuqi.homeschoolinguqiv2;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,6 +26,24 @@ public class MainActivity extends AppCompatActivity implements AdvancedWebView.L
         webView = findViewById(R.id.webView);
         webView.setListener(this,this);
         webView.setMixedContentAllowed(false);
+        webView.setWebViewClient(new WebViewClient(){
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                try {
+                    if (url.contains("intent:")) {
+                        startActivity(Intent.parseUri(url, Intent.URI_INTENT_SCHEME));
+                        return true;
+                    } else if (!url.contains("zoom.us") && !url.contains("meet.google")) {
+                        return false;
+                    } else {
+                        startActivity(new Intent("android.intent.action.VIEW", Uri.parse(url)));
+                        return true;
+                    }
+                } catch (Exception unused) {
+                    return false;
+                }
+            }
+        });
         webView.loadUrl("https://app.hsuqi.com");
     }
 
